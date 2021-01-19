@@ -5,25 +5,26 @@ export interface CountProps{
     description:string; 
 }
 
+export interface jsonTodo {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+}
+
 function Count({description}: CountProps) {
-    //will console.log just when description changes
+    const [todo, setTodo]= useState<jsonTodo>();
     useEffect(()=>{
-        let currentRender = true; 
-        setTimeout(()=>{
-            if(currentRender){
-                console.log(description) 
-            } else{
-                console.log('past values') 
-            } 
-
-        }, 3000)
-       
-        //I can return a function here  for example to clean a time interval
-        //and just the last value will be consoled log 
-        return () =>{
-            currentRender = false; 
+        async function loadData(){
+            try{
+                const response= await fetch('https://jsonplaceholder.typicode.com/todos/1'); 
+            const json = await response.json(); 
+                setTodo(json); 
+            }catch(error){
+                console.log("error:",error);
+            }
         }
-
+        loadData(); 
     }, [description])
 
     const [count,setCount] = useState(0); 
@@ -39,6 +40,7 @@ function Count({description}: CountProps) {
     return (
         <div className='count'>
             <h1>{description}</h1>
+            {todo?.title}
             <div className='counter-section'>
             <button onClick={handleClickSub}>-</button>
             <h3>{count}</h3>
